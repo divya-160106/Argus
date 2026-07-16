@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import GRU, Dense, Dropout
 from tensorflow.keras.callbacks import ( EarlyStopping, ModelCheckpoint, ReduceLROnPlateau )
-from config import FEATURE_COLUMNS
+from config import MODEL_FEATURES
 import pandas as pd
 
 print("Loading processed data...")
@@ -21,7 +21,7 @@ model = Sequential([ GRU( 128, return_sequences=True, input_shape=(X_train.shape
     Dropout(0.2),
     Dense(64, activation="relu"),
     Dense(32, activation="relu"),
-    Dense( len(FEATURE_COLUMNS), activation="linear" )
+    Dense( len(MODEL_FEATURES), activation="linear" )
 ])
 
 model.compile( optimizer="adam", loss="mse", metrics=["mae"] )

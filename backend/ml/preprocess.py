@@ -3,14 +3,20 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from database import warehouse_collection
-from backend.config import SEQUENCE_LENGTH, FEATURE_COLUMNS
+from config import SEQUENCE_LENGTH, MODEL_FEATURES
 
 print("Loading data from MongoDB...")
 
 documents = list( warehouse_collection.find( {}, {"_id": 0} ) )
 df = pd.DataFrame(documents)
 df = df.sort_values( by=["date", "hour"] ).reset_index(drop=True)
-data = df[FEATURE_COLUMNS]
+df = pd.get_dummies(df, columns=["weather"], prefix="weather")
+df.rename( columns={ "weather_Sunny": "weather_sunny", "weather_Cloudy": "weather_cloudy", "weather_Rain": "weather_rain", },
+    inplace=True,
+)
+data = df[MODEL_FEATURES]
+
+print(data.columns.tolist())
 
 scaler = MinMaxScaler()
 scaled = scaler.fit_transform(data)

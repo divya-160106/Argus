@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Query
 from database import warehouse_collection
-from ml.predict import predict_next_state
+from ml.predict import predict_future
 from fastapi.middleware.cors import CORSMiddleware
+from prediction_cache import get_predictions, set_predictions
 
 app = FastAPI( title="Argus", version="1.0.0" )
 
@@ -67,4 +68,10 @@ def get_filters():
 
 @app.get("/predict")
 def predict():
-    return predict_next_state()
+    cached = get_predictions()
+
+    if cached is None:
+        cached = predict_future()
+        set_predictions(cached)
+
+    return cached
